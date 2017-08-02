@@ -1,0 +1,32 @@
+---
+- name: install essential repos
+  yum_repository:
+    name: resilio-sync
+    description: Resilio Sync $basearch
+    baseurl: https://linux-packages.resilio.com/resilio-sync/rpm/$basearch
+    gpgkey: https://linux-packages.resilio.com/resilio-sync/key.asc
+    gpgcheck: yes
+  tags: prepare
+
+- name: install dependencies
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ rslsync_dependencies }}"
+  notify: restart resilio-sync
+  tags: install
+
+- name: start and enable service (7)
+  systemd:
+    name: resilio-sync
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  when: ansible_distribution_version >= '7'
+
+- name: start and enable service (6)
+  service:
+    name: resilio-sync
+    state: started
+    enabled: yes
+  when: ansible_distribution_version < '7'
