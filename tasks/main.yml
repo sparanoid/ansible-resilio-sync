@@ -10,9 +10,8 @@
 
 - name: install dependencies
   yum:
-    name: "{{ item }}"
+    name: "{{ rslsync_dependencies }}"
     state: latest
-  with_items: "{{ rslsync_dependencies }}"
   notify: restart resilio-sync
   tags: install
 
